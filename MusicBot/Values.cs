@@ -21,7 +21,7 @@ namespace MusicBot
 
         public static string getTokenTemp()
         {
-            return "ODg0ODU0Njc1MzYxMzc4MzM0.YTejIg.5aWepCTTmsGkuBs7qiSh8HW3F8s";
+            return "";
         }
 
         private class Config

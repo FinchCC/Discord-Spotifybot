@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="botcfg.txt" />
+    <None Remove="Lavalink.jar" />
+    <None Remove="log.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="RestSharp" Version="106.12.0" />
     <PackageReference Include="Victoria" Version="5.2.3" />
   </ItemGroup>
 

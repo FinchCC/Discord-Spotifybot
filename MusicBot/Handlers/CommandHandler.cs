@@ -42,7 +42,7 @@ namespace MusicBot
             int pos = 0;
 
             if (arg.Author.IsBot) return;
-            //if (!((SocketUserMessage)arg).HasMentionPrefix(arg.Author, ref pos)) return;
+            if (!((SocketUserMessage)arg).HasCharPrefix(Values.prefix, ref pos)) return;
 
             var userMessages = arg as SocketUserMessage; //message class that contains the information about message and shit
 

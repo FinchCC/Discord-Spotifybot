@@ -42,19 +42,28 @@ namespace MusicBot.Dependencys
 
         private async Task _lavaNode_OnTrackEnded(Victoria.EventArgs.TrackEndedEventArgs arg)
         {
-            var person = arg.Player;
-            if (!person.Queue.TryDequeue(out var queueable))
+            if (arg.Reason == Victoria.Enums.TrackEndReason.Stopped)
                 return;
+
+            //if (Values.repeat == true)
+            //{
+            //    await arg.Player.StopAsync(); not ready yet
+            //    await arg.Player.PlayAsync(arg.Player.VoiceChannel.);
+            //}
+
+            if (!arg.Player.Queue.TryDequeue(out var queueable))
+                return;
+
+
 
             if(!(queueable is LavaTrack track))
             {
-                await person.TextChannel.SendMessageAsync("Not a valid song");
+                await arg.Player.TextChannel.SendMessageAsync("Not a valid song");
                 return;
             }
 
+            await arg.Player.StopAsync();
             await arg.Player.PlayAsync(track);
-            await person.TextChannel.SendMessageAsync($"Now playing {track.Title}");
-
         }
 
         private Task _lavaNode_OnLog(LogMessage arg)

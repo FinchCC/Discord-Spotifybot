@@ -22,11 +22,13 @@ namespace MusicBot
 
         public botClient(DiscordSocketClient client = null, CommandService cmdservice = null)
         {
+            #region old dependecy injection
             //_client = client ?? new DiscordSocketClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, //created a new discord socket client
             //    LogLevel = Discord.LogSeverity.Debug });
 
             //_commandsService = cmdservice ?? new CommandService(new CommandServiceConfig { LogLevel = Discord.LogSeverity.Debug,
-            //    CaseSensitiveCommands = false }); //creates a new commandsservice, for support of [Command("name")] shit i think
+            //    CaseSensitiveCommands = false }); //creates a new commandsservice, for support of [Command("name")] shit i think 
+            #endregion
 
             _serviceProvider = ConfigureServices();
             _client = _serviceProvider.GetRequiredService<DiscordSocketClient>();
@@ -37,12 +39,17 @@ namespace MusicBot
 
         public async Task RunAsync()
         {
-            await _client.LoginAsync(Discord.TokenType.Bot, Values.getTokenTemp()); //logs into the bot
+            await _client.LoginAsync(Discord.TokenType.Bot, MISC.Tokens.GetToken()); //logs into the bot
             await _client.StartAsync(); //starts the discord connection
+
+            // - Setting the game status -
+            await _client.SetGameAsync("#1 Spotify bot");
+
+            // - Events -
             _client.Log += LogAsync; // log event for discord connection
+
+
             _musicDependency = new MusicDependency(_client, _serviceProvider, _node);
-            _serviceProvider = ConfigureServices(); //create a serviceprovider for dependency injection
-            /* _node = _serviceProvider.GetRequiredService<LavaNode>();*/ //gets the Lavanode from dependency injection
 
             await _musicDependency.InitAsync();
 

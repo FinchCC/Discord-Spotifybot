@@ -4,6 +4,9 @@ project, was a unique feature and why i even made the bot. As more and more bots
 You should therefore not expect it to get update or improved(something this project needs), use this a learning tool instead.
 
 
+
+
+
 # Important:
 As this was speedcoded after the rythm ban, everything is just bodged together and a lot of things should probably be improved. But to get it working you need the victorian engine
 which you can get here: https://github.com/Yucked/Victoria

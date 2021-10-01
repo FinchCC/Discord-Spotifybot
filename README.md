@@ -11,7 +11,7 @@ You should therefore not expect it to get update or improved(something this proj
 As this was speedcoded after the rythm ban, everything is just bodged together and a lot of things should probably be improved. But to get it working you need the victorian
 framework which you can get here: https://github.com/Yucked/Victoria
 
-And you also need a api key for the spotify playlist search api, which is also free: https://rapidapi.com/shekhar1000.sc/api/unsa-unofficial-spotify-api
+You also need a api key for the spotify playlist search api, which is also free at: https://rapidapi.com/shekhar1000.sc/api/unsa-unofficial-spotify-api
 
 To get it working you can either just add the api keys in the return field of the tokens.cs class or you can add them in the botcfg.txt, which need to be placed in the same folder
 as the project and therefor is not the solution of you want to debug it.

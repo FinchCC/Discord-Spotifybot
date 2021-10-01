@@ -17,5 +17,5 @@ To get it working you can either just add the api keys in the return field of th
 as the project and therefor is not the solution of you want to debug it.
 
 
-Please see this as help and not a actual bot, this is and still is a shitty project coded as fast as possible. There are better and free bots out there, but this is the only 
-source-code on a bot with spotify playlist searcher.
+Again, please see this as help and not a actual bot, this is and still is a shitty project coded as fast as possible. There are better and free bots out there, 
+but this is the only source-code on a bot with spotify playlist searcher.

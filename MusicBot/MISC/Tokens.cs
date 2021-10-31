@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
-
+using System.Threading.Tasks;
 
 namespace MusicBot.MISC
 {
@@ -14,17 +14,26 @@ namespace MusicBot.MISC
             return cfg.token;
         }
 
-        public static string GetSpotifyToken()
+        public static async Task<string> GetSpotifyToken()
         {
-            checkcfg();
-            return cfg.spotifytoken;
+            await checkcfg();
+            return await Task.FromResult(cfg.spotifytoken);
         }
 
-        private static void checkcfg()
+        public static async Task checkcfg()
         {
             if (cfg == null)
             {
-                var content = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "botcfg.txt"));
+                string content;
+                try
+                {
+                    content = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "botcfg.txt"));
+                }
+                catch (System.Exception)
+                {
+                    //just to make debugging easier, cant be bothered to use time on this
+                    content = File.ReadAllText(Path.Combine("C:\\Users\\askha\\Documents\\TEMP", "botcfg.txt"));
+                }
                 cfg = JsonConvert.DeserializeObject<Config>(content);
             }
         }

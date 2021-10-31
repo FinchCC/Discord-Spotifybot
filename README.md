@@ -1,4 +1,4 @@
-# Discord-bot with Spotify semi-integration
+# Discord-musicbot with Spotify playlist searcher
 A normal musicbot built on the victorian api. Also has the ability to queue songs from spotify playlist, as long as they are public. Which at the time i started coding this
 project, was a unique feature and why i even made the bot. As more and more bots have implementet this feature, with better developers behind i have no use in this anymore.
 You should therefore not expect it to get update or improved(something this project needs), use this a learning tool instead.

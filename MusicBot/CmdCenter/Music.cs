@@ -430,6 +430,71 @@ namespace MusicBot.CmdCenter
             }
         }
 
+        [Command("playnow"), Alias("pn")]
+        public async Task playnow([Remainder] string queue)
+        {
+            var person = _lavaNode.GetPlayer(Context.Guild);
+            if(person.PlayerState != Victoria.Enums.PlayerState.Playing || person.PlayerState != Victoria.Enums.PlayerState.Paused)
+            {
+                try
+                {
+                    await play(queue);
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine("Player is not playing and could not play either");
+                    await ReplyAsync("Player is not playing and could not play either");
+                    return;
+                }
+            }
+            else
+            {
+                var searchResponse = await _lavaNode.SearchYouTubeAsync(queue);
+                if(searchResponse.Status == Victoria.Responses.Search.SearchStatus.NoMatches ||
+                    searchResponse.Status == Victoria.Responses.Search.SearchStatus.LoadFailed)
+                { 
+                    await ReplyAsync($"{cross} Could not find any matches");
+                    return;
+                }
+
+                var track = searchResponse.Tracks.ElementAt(0);
+                await person.PlayAsync(track);
+                await ReplyAsync($"{arrow}Now playing **{track.Title}**");
+            }
+        }
+
+
+        [Command("newqueue"), Alias("newq")]
+        public async Task newqueue([Remainder] string plname)
+        {
+            await ReplyAsync(Handlers.FileHandler.CreateQueue(plname));
+        }
+
+        [Command("add")]
+        public async Task addSong([Remainder] string args)
+        {
+            string[] parameters = args.Split(" ");
+            if(parameters.Count() != 2)
+            {
+                await ReplyAsync(cross + "Format needs to be as followed: -add 'song-name' 'playlistname' ");
+                return;
+            }
+
+            parameters[0].Replace("-", " ");
+
+            if(Handlers.FileHandler.CheckQueue(parameters[1]) != true)
+            {
+                await ReplyAsync(cross + "No Queue with that name: " + parameters[1] + "exists, try creating one with -newqueue 'name'");
+                return;
+            }
+
+
+            Handlers.FileHandler.AddSong(parameters[1], parameters[0]);
+            await ReplyAsync($"Added the song: {parameters[0]} to the playlist: {parameters[1]}");
+
+        }
+
     }
 }
 

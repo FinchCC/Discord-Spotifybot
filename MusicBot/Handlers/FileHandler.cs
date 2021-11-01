@@ -35,8 +35,11 @@ namespace MusicBot.Handlers
         {
             List<string> temp = File.ReadAllLines(Path.Combine(path, queuename + ".txt")).ToList<string>();
 
-            if(temp == null || temp.Count() == 0)
+            if (temp == null || temp.Count() == 0)
+            {
                 File.WriteAllText(Path.Combine(path, queuename + ".txt"), songname);
+                return;
+            }
 
             temp.Add(songname);
             File.WriteAllLines(Path.Combine(path, queuename + ".txt"), temp.ToArray());

@@ -99,7 +99,7 @@ namespace MusicBot.CmdCenter
                 {
                     await join();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     await ReplyAsync($"Could not connect to a voice chat, error: {e.Message}");
                     return;
@@ -169,7 +169,7 @@ namespace MusicBot.CmdCenter
         [Command("Splay"), Alias("spl")]
         public async Task spoityplay([Remainder] string plid)
         {
-            if(string.IsNullOrEmpty(plid))
+            if (string.IsNullOrEmpty(plid))
             {
                 await ReplyAsync("Provide a playlistid");
                 return;
@@ -192,7 +192,7 @@ namespace MusicBot.CmdCenter
             var person = _lavaNode.GetPlayer(Context.Guild);
 
             string[] songnames = await SpotifyParser.getSongNamesArr(plid);
-            if(songnames == null|| songnames.Count() == 0)
+            if (songnames == null || songnames.Count() == 0)
             {
                 await ReplyAsync($"{cross}Wrong or no playlist id");
                 return;
@@ -210,7 +210,7 @@ namespace MusicBot.CmdCenter
                     continue;
                 }
 
-                if(person.PlayerState == Victoria.Enums.PlayerState.Playing || person.PlayerState == Victoria.Enums.PlayerState.Paused)
+                if (person.PlayerState == Victoria.Enums.PlayerState.Playing || person.PlayerState == Victoria.Enums.PlayerState.Paused)
                 {
                     try
                     {
@@ -222,7 +222,7 @@ namespace MusicBot.CmdCenter
                     {
                         await ReplyAsync($"{cross}Could not queue {songs}, Error: {e.Message}");
                         continue;
-                    }                    
+                    }
                 }
                 else
                 {
@@ -231,7 +231,7 @@ namespace MusicBot.CmdCenter
                     {
                         await person.PlayAsync(track);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         await ReplyAsync($"{cross}Could not queue {songs}, Error: {e.Message}");
                         continue;
@@ -318,12 +318,12 @@ namespace MusicBot.CmdCenter
         public async Task nowplaying()
         {
             var person = _lavaNode.GetPlayer(Context.Guild);
-            if(person.PlayerState == Victoria.Enums.PlayerState.Stopped || person.PlayerState == Victoria.Enums.PlayerState.None)
+            if (person.PlayerState == Victoria.Enums.PlayerState.Stopped || person.PlayerState == Victoria.Enums.PlayerState.None)
             {
                 await ReplyAsync("Not even playing");
                 return;
             }
-            
+
             await ReplyAsync($"{arrow}Currently playing: **{person.Track.Title} - {person.Track.Author}**");
         }
 
@@ -375,7 +375,7 @@ namespace MusicBot.CmdCenter
         [Command("Volume"), Alias("v")]
         public async Task SetVolume(int ammount)
         {
-            if(ammount > 150 || ammount <= 0)
+            if (ammount > 150 || ammount <= 0)
             {
                 await ReplyAsync($"{cross}**Volume must be between 0 and 150*");
                 return;
@@ -386,7 +386,7 @@ namespace MusicBot.CmdCenter
                 await person.UpdateVolumeAsync((ushort)ammount);
                 await ReplyAsync($"{arrow}**New volume is set to {ammount.ToString()}**");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
@@ -411,7 +411,7 @@ namespace MusicBot.CmdCenter
         public async Task replay()
         {
             var person = _lavaNode.GetPlayer(Context.Guild);
-            if(person.PlayerState != Victoria.Enums.PlayerState.Playing)
+            if (person.PlayerState != Victoria.Enums.PlayerState.Playing)
             {
                 await ReplyAsync($"{cross}**Play something first**");
                 return;
@@ -422,9 +422,9 @@ namespace MusicBot.CmdCenter
             try
             {
                 await person.PlayAsync(track);
-                await ReplyAsync($"Replaying: **{track.Title} - {track.Author}**");                
+                await ReplyAsync($"Replaying: **{track.Title} - {track.Author}**");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 await ReplyAsync($"{cross}**Could not replay the current song, Error: {e.Message}**");
             }
@@ -434,13 +434,13 @@ namespace MusicBot.CmdCenter
         public async Task playnow([Remainder] string queue)
         {
             var person = _lavaNode.GetPlayer(Context.Guild);
-            if(person.PlayerState != Victoria.Enums.PlayerState.Playing || person.PlayerState != Victoria.Enums.PlayerState.Paused)
+            if (person.PlayerState != Victoria.Enums.PlayerState.Playing || person.PlayerState != Victoria.Enums.PlayerState.Paused)
             {
                 try
                 {
                     await play(queue);
                 }
-                catch (Exception e)
+                catch
                 {
 
                     Console.WriteLine("Player is not playing and could not play either");
@@ -451,9 +451,9 @@ namespace MusicBot.CmdCenter
             else
             {
                 var searchResponse = await _lavaNode.SearchYouTubeAsync(queue);
-                if(searchResponse.Status == Victoria.Responses.Search.SearchStatus.NoMatches ||
+                if (searchResponse.Status == Victoria.Responses.Search.SearchStatus.NoMatches ||
                     searchResponse.Status == Victoria.Responses.Search.SearchStatus.LoadFailed)
-                { 
+                {
                     await ReplyAsync($"{cross} Could not find any matches");
                     return;
                 }
@@ -467,32 +467,117 @@ namespace MusicBot.CmdCenter
 
         [Command("newqueue"), Alias("newq")]
         public async Task newqueue([Remainder] string plname)
-        {
-            await ReplyAsync(Handlers.FileHandler.CreateQueue(plname));
-        }
+            => await ReplyAsync(Handlers.FileHandler.CreateQueue(plname));
+
+
+        [Command("queuesongs"), Alias("qsongs")]
+        public async Task queuesongs([Remainder] string queuename)
+            => await ReplyAsync(Handlers.FileHandler.getSongs(queuename));
+
+        [Command("queuelist"), Alias("qlist")]
+        public async Task queuelist()
+            => await ReplyAsync(Handlers.FileHandler.queueList());
+
+        [Command("delqueue"), Alias("delq")]
+        public async Task delqueue([Remainder] string queuename)
+            => await ReplyAsync(Handlers.FileHandler.deleteList(queuename));
+
 
         [Command("add")]
         public async Task addSong([Remainder] string args)
         {
             string[] parameters = args.Split(" ");
-            if(parameters.Count() != 2)
+            if (parameters.Count() != 2)
             {
                 await ReplyAsync(cross + "Format needs to be as followed: -add 'song-name' 'playlistname' ");
                 return;
             }
 
-            parameters[0].Replace("-", " ");
+            string song = parameters[0].Replace("-", " ");
 
-            if(Handlers.FileHandler.CheckQueue(parameters[1]) != true)
+            if (Handlers.FileHandler.CheckQueue(parameters[1]) != true)
             {
                 await ReplyAsync(cross + "No Queue with that name: " + parameters[1] + "exists, try creating one with -newqueue 'name'");
                 return;
             }
 
+            await ReplyAsync(Handlers.FileHandler.AddSong(parameters[1], song));
+        }
 
-            Handlers.FileHandler.AddSong(parameters[1], parameters[0]);
-            await ReplyAsync($"Added the song: {parameters[0]} to the playlist: {parameters[1]}");
+        [Command("playsongs"), Alias("psongs")]
+        public async Task queueSongs([Remainder] string listname)
+        {
+            if (!_lavaNode.HasPlayer(Context.Guild)) //lavanode i guess refreer to the connection between lavanode and a person in voice
+            {
+                await ReplyAsync("Connecting to a voice chat");
+                try
+                {
+                    await join();
+                }
+                catch (Exception e)
+                {
+                    await ReplyAsync($"Could not connect to a voice chat, error: {e.Message}");
+                    return;
+                }
+            }
 
+            if (string.IsNullOrEmpty(listname) == true || Handlers.FileHandler.CheckQueue(listname) ==  false)
+            {
+                await ReplyAsync("**No queues saved, try creating one with:** -newq 'name'");
+                return;
+            }
+
+            var songs = Handlers.FileHandler.rFile(listname);
+
+            var person = _lavaNode.GetPlayer(Context.Guild);
+
+            if(person.PlayerState != Victoria.Enums.PlayerState.Playing || person.PlayerState != Victoria.Enums.PlayerState.Paused)
+            {
+                for(int i = 0; i < songs.Count(); i++)
+                {
+                    var searchResponse = await _lavaNode.SearchYouTubeAsync(songs[i]);
+                    if (searchResponse.Status == Victoria.Responses.Search.SearchStatus.NoMatches ||
+                        searchResponse.Status == Victoria.Responses.Search.SearchStatus.LoadFailed)
+                    {
+                        await ReplyAsync($"{cross} Could not find any matches for {songs[i]}, trying next song");
+                        continue;
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            var track = searchResponse.Tracks.ElementAt(0);
+                            await person.PlayAsync(track);
+                            await ReplyAsync($"{arrow}Playing **{track.Title} - {track.Author}** from **{listname}**");
+                        }
+                        else
+                        {
+                            var track = searchResponse.Tracks.ElementAt(0);
+                            person.Queue.Enqueue(track);
+                            await ReplyAsync($"{arrow}Queued: **{track.Title} - {track.Author}** from **{listname}**");
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                foreach (var song in songs)
+                {
+                    var searchResponse = await _lavaNode.SearchYouTubeAsync(song);
+                    if (searchResponse.Status == Victoria.Responses.Search.SearchStatus.NoMatches ||
+                        searchResponse.Status == Victoria.Responses.Search.SearchStatus.LoadFailed)
+                    {
+                        await ReplyAsync($"{cross} Could not find any matches for {song}, trying next song");
+                    } 
+                    else
+                    {
+                        var track = searchResponse.Tracks.ElementAt(0);
+                        person.Queue.Enqueue(track);
+                        await ReplyAsync($"{arrow}Queued: **{track.Title} - {track.Author}**");
+                    }
+                }
+            }
         }
 
     }

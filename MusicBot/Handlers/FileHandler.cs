@@ -31,18 +31,70 @@ namespace MusicBot.Handlers
                 return false;
         }
 
-        public static void AddSong(string queuename, string songname)
+        public static string AddSong(string queuename, string songname)
         {
             List<string> temp = File.ReadAllLines(Path.Combine(path, queuename + ".txt")).ToList<string>();
 
             if (temp == null || temp.Count() == 0)
             {
                 File.WriteAllText(Path.Combine(path, queuename + ".txt"), songname);
-                return;
+                return ("**Added: " + songname + "to: " + queuename + "**");
             }
 
             temp.Add(songname);
             File.WriteAllLines(Path.Combine(path, queuename + ".txt"), temp.ToArray());
+
+            return ("**Added: " + songname + "to: " + queuename + "**");
+        }
+
+        public static string getSongs(string queuename)
+        {
+            if (!CheckQueue(queuename))
+                return "**No queue with that name**";
+
+            var temp = rFile(queuename);
+            string songs = string.Join("\n", temp);
+            int count = temp.Count();
+
+            return ("**" + queuename + "** Contains **" + count + "**:" + "\n" + "*" + songs + "*");
+
+        }
+
+        public static string[] rFile(string filename)
+        {
+            return File.ReadAllLines(Path.Combine(path, filename + ".txt"));
+        }
+
+        private static int countLines(string filename)
+        {
+            return rFile(filename).Count();
+        }
+
+        public static string queueList()
+        {
+            var files = Directory.GetFiles(path).Select(file => Path.GetFileName(file)).Select(name => name.Replace(".txt", "")).ToArray();
+            int lcount = files.Count();
+
+            if (lcount == 0)
+                return "**No queues saved, try creating one with:** -newq 'name'";
+            
+            string message = "**Queue saved:**";            
+            foreach (var list in files)
+            {
+                message += ("\n**" + list + "** Contains **" + countLines(list).ToString() + "** songs");
+            }
+
+            return message;
+        }
+
+        public static string deleteList(string name)
+        {
+            if (!CheckQueue(name))
+                return "**No queues saved, try creating one with:** -newq 'name'";
+
+            File.Delete(Path.Combine(path, name + ".txt"));
+
+            return ("**" + name + "** is now **deleted**");
         }
 
 

@@ -580,6 +580,56 @@ namespace MusicBot.CmdCenter
             }
         }
 
+        [Command("lyrics"), Alias("lyric")]
+        public async Task getLyrics()
+        {
+            if (!_lavaNode.HasPlayer(Context.Guild)) //lavanode i guess refreer to the connection between lavanode and a person in voice
+            {
+                await ReplyAsync("Connecting to a voice chat");
+                try
+                {
+                    await join();
+                }
+                catch (Exception e)
+                {
+                    await ReplyAsync($"Could not connect to a voice chat, error: {e.Message}");
+                    return;
+                }
+            }
+
+            var person = _lavaNode.GetPlayer(Context.Guild);
+            if(person.PlayerState != Victoria.Enums.PlayerState.Playing || person.PlayerState != Victoria.Enums.PlayerState.Paused)
+            {
+                await ReplyAsync($"{cross}**No song playing**");
+                return;
+            }
+
+            
+            try
+            {
+                var lyrics = await person.Track.FetchLyricsFromGeniusAsync();
+                if(lyrics.Length > 2000)
+                {
+                    int pageNum = (int)lyrics.Length / 2;
+
+                    int ammount = 0;
+                    for (int i = 0; i < pageNum; i++)
+                    {
+                        await ReplyAsync(lyrics.Substring(ammount, pageNum));
+                        ammount += pageNum;
+                    }
+                }
+                else
+                {
+                    await ReplyAsync($"**Lyrics for {person.Track.Title}:**\n{lyrics}");
+                }
+            }
+            catch(Exception e)
+            {
+                await ReplyAsync($"**Could not retrive lyrics**, Error: {e.Message}");
+            }
+        }
+
     }
 }
 
